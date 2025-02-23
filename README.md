@@ -26,3 +26,18 @@ For our Blender rendering code, see [blender_script.py](point_e/evals/scripts/bl
 You can download the seed images and point clouds corresponding to the paper banner images [here](https://openaipublic.azureedge.net/main/point-e/banner_pcs.zip).
 
 You can download the seed images used for COCO CLIP R-Precision evaluations [here](https://openaipublic.azureedge.net/main/point-e/coco_images.zip).
+
+
+# How to Run
+You can run the code exactly as you would with the original Point-E version. No changes are required in the execution commands or workflow.
+
+Or follow below steps
+1. Open Visual Studio Code and select the project folder(Point-e).
+2. Open the terminal by going to View > Terminal, then create and activate a virtual environment.
+3. Build and launch JupyterLab by running the following command in the terminal, which will open the interface in your browser.
+   jupyter lab build
+   jupyter lab
+4. Select either text2pointcloud.ipynb or image2pointcloud.ipynb and run it using the JupyterLab interface to see the results directly.
+
+
+
