@@ -1,0 +1,27 @@
+# Core dependencies from setup.py
+filelock>=3.0.0
+Pillow>=8.0.0
+torch>=1.9.0
+fire>=0.4.0
+humanize>=3.0.0
+requests>=2.25.0
+tqdm>=4.50.0
+matplotlib>=3.3.0
+scikit-image>=0.18.0
+scipy>=1.5.0
+numpy>=1.19.0
+
+# CLIP from GitHub
+clip @ git+https://github.com/openai/CLIP.git
+
+# Additional dependencies detected from code
+open3d>=0.13.0
+
+# Jupyter and notebook support
+jupyter>=1.0.0
+jupyterlab>=3.0.0
+ipython>=7.0.0
+ipykernel>=6.0.0
+
+# Additional utilities
+pandas>=1.1.0
