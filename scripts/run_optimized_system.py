@@ -2,6 +2,12 @@
 
 import sys
 import os
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import time
 import multiprocessing as mp
 from pathlib import Path
@@ -9,7 +15,7 @@ import psutil
 import matplotlib.pyplot as plt
 
 # Add optimized module to path
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from point_e_optimized import PointEGenerator, PointCloudProcessor, PointCloudVisualizer, setup_logging, PerformanceMonitor
 from point_e_optimized.core import GenerationConfig

@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import time
 import multiprocessing as mp
 import psutil
@@ -224,7 +230,7 @@ if __name__ == "__main__":
         print(f"\n📁 Generated Files:")
         for i in range(3):
             print(f"   - optimized_comparison_{i}.png")
-        print(f"   - enhanced_outputs/ply_files/")
-        print(f"   - enhanced_outputs/metadata/")
+        print(f"   - outputs/enhanced_outputs/ply_files/")
+        print(f"   - outputs/enhanced_outputs/metadata/")
     else:
         print(f"\n❌ SYSTEM EXECUTION FAILED!")

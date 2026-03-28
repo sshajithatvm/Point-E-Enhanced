@@ -1,15 +1,81 @@
 #!/usr/bin/env python3
 
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import torch
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from tqdm.auto import tqdm
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import matplotlib.pyplot as plt
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import numpy as np
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import time
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import os
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e.diffusion.configs import DIFFUSION_CONFIGS, diffusion_from_config
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e.diffusion.sampler import PointCloudSampler
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e.models.download import load_checkpoint
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e.models.configs import MODEL_CONFIGS, model_from_config
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e.enhancements.applyenhancements import enhance_point_cloud
 
 def verify_text2pointcloud():
@@ -99,11 +165,11 @@ def verify_text2pointcloud():
     ply_files = []
     metadata_files = []
     
-    ply_dir = 'enhanced_outputs/ply_files'
+    ply_dir = 'outputs/enhanced_outputs/ply_files'
     if os.path.exists(ply_dir):
         ply_files = [f for f in os.listdir(ply_dir) if f.endswith('.ply')]
     
-    metadata_dir = 'enhanced_outputs/metadata'
+    metadata_dir = 'outputs/enhanced_outputs/metadata'
     if os.path.exists(metadata_dir):
         metadata_files = [f for f in os.listdir(metadata_dir) if f.endswith('.json')]
     

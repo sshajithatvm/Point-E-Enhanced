@@ -1,8 +1,32 @@
 #!/usr/bin/env python3
 
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import numpy as np
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import matplotlib.pyplot as plt
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e.util.point_cloud import PointCloud
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e_optimized.validator import PointCloudValidator
 
 def create_test_point_clouds():
@@ -108,8 +132,8 @@ def test_validation():
         # Try to load a real enhanced point cloud
         import os
         ply_files = []
-        if os.path.exists('enhanced_outputs/ply_files'):
-            ply_files = [f for f in os.listdir('enhanced_outputs/ply_files') if f.endswith('.ply')]
+        if os.path.exists('outputs/enhanced_outputs/ply_files'):
+            ply_files = [f for f in os.listdir('outputs/enhanced_outputs/ply_files') if f.endswith('.ply')]
         
         if ply_files:
             # Load the most recent PLY file
@@ -117,7 +141,7 @@ def test_validation():
             print(f"Loading: {latest_ply}")
             
             import open3d as o3d
-            pcd = o3d.io.read_point_cloud(f'enhanced_outputs/ply_files/{latest_ply}')
+            pcd = o3d.io.read_point_cloud(f'outputs/enhanced_outputs/ply_files/{latest_ply}')
             points = np.asarray(pcd.points)
             
             # Create PointCloud object

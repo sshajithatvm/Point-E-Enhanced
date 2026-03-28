@@ -1,5 +1,6 @@
 import logging
 import time
+import os
 from typing import Dict, Any
 from dataclasses import dataclass
 import psutil
@@ -8,11 +9,12 @@ import numpy as np
 
 def setup_logging(level: str = "INFO") -> logging.Logger:
     """Setup structured logging."""
+    os.makedirs('outputs', exist_ok=True)
     logging.basicConfig(
         level=getattr(logging, level.upper()),
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler('pointe_optimized.log'),
+            logging.FileHandler('outputs/pointe_optimized.log'),
             logging.StreamHandler()
         ]
     )

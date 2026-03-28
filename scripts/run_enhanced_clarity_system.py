@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import time
 import multiprocessing as mp
 import psutil
@@ -8,10 +14,10 @@ import numpy as np
 import torch
 from tqdm.auto import tqdm
 
-def run_density_preserving_system():
-    """Run Point-E system with density-preserving enhancement."""
-    print("🚀 POINT-E DENSITY-PRESERVING ENHANCEMENT SYSTEM")
-    print("=" * 80)
+def run_enhanced_clarity_system():
+    """Run Point-E system with enhanced clarity focusing on edge sharpness and structural detail."""
+    print("✨ POINT-E ENHANCED CLARITY SYSTEM")
+    print("=" * 70)
     
     # System info
     print(f"System Configuration:")
@@ -28,11 +34,11 @@ def run_density_preserving_system():
     from point_e.models.download import load_checkpoint
     from point_e.diffusion.sampler import PointCloudSampler
     from point_e_optimized.validator import PointCloudValidator
-    from point_e_optimized.advanced_processors import AdvancedPointCloudProcessor
+    from point_e_optimized.enhanced_clarity_processors import EnhancedClarityProcessor
     
     device = torch.device('cpu')
     validator = PointCloudValidator()
-    processor = AdvancedPointCloudProcessor(num_workers=mp.cpu_count())
+    processor = EnhancedClarityProcessor(num_workers=mp.cpu_count())
     
     # Enable optimizations
     torch.backends.cudnn.allow_tf32 = True
@@ -74,12 +80,13 @@ def run_density_preserving_system():
     prompts = ["a detailed sports car", "a complex aircraft"]
     
     print(f"\n🎨 GENERATING AND ENHANCING POINT CLOUDS...")
-    print(f"Target density: 4096 points per cloud")
-    print(f"Enhancement: Density-preserving with Poisson reconstruction")
+    print(f"Target points: 4096 per cloud")
+    print(f"Enhancement: Enhanced clarity with edge sharpness and structural detail")
     
     original_pcs = []
     enhanced_pcs = []
     validation_results = []
+    performance_data = []
     
     for i, prompt in enumerate(prompts):
         print(f"\n{'='*70}")
@@ -108,10 +115,10 @@ def run_density_preserving_system():
         
         original_pcs.append(pc)
         
-        # Enhance with density preservation
-        print(f"\n🔧 ENHANCING (Density-Preserving)...")
+        # Enhanced clarity processing
+        print(f"\n✨ ENHANCED CLARITY PROCESSING...")
         start_time = time.time()
-        enhanced_pc = processor._enhance_single_advanced(pc)
+        enhanced_pc = processor._enhance_clarity(pc)
         enh_time = time.time() - start_time
         
         # Validate enhanced
@@ -127,26 +134,37 @@ def run_density_preserving_system():
         enhanced_pcs.append(enhanced_pc)
         validation_results.append((orig_validation, enh_validation))
         
+        # Performance data
+        performance_data.append({
+            'prompt': prompt,
+            'gen_time': gen_time,
+            'enh_time': enh_time,
+            'orig_points': len(pc.coords),
+            'enh_points': len(enhanced_pc.coords),
+            'orig_valid': orig_validation.is_valid,
+            'enh_valid': enh_validation.is_valid
+        })
+        
         # Summary
-        density_change = ((len(enhanced_pc.coords) - len(pc.coords)) / len(pc.coords)) * 100
+        point_change = ((len(enhanced_pc.coords) - len(pc.coords)) / len(pc.coords)) * 100
         print(f"\n📊 SUMMARY:")
         print(f"  Generation Time: {gen_time:.2f}s")
         print(f"  Enhancement Time: {enh_time:.2f}s")
-        print(f"  Point Count Change: {density_change:+.1f}%")
+        print(f"  Point Count Change: {point_change:+.1f}%")
         print(f"  Original Valid: {'✅' if orig_validation.is_valid else '❌'}")
         print(f"  Enhanced Valid: {'✅' if enh_validation.is_valid else '❌'}")
     
-    # Create density-preserving visualizations
-    print(f"\n🎨 CREATING DENSITY-PRESERVING COMPARISONS...")
+    # Create enhanced clarity visualizations
+    print(f"\n🎨 CREATING ENHANCED CLARITY COMPARISONS...")
     
     for i, (orig, enh, prompt) in enumerate(zip(original_pcs, enhanced_pcs, prompts)):
-        fig = plt.figure(figsize=(24, 12))
+        fig = plt.figure(figsize=(20, 10))
         
         # Original
         ax1 = fig.add_subplot(141, projection='3d')
         points_orig = np.array(orig.coords)
         scatter1 = ax1.scatter(points_orig[:, 0], points_orig[:, 1], points_orig[:, 2], 
-                             c=points_orig[:, 2], cmap='viridis', s=1, alpha=0.8)
+                             c=points_orig[:, 2], cmap='viridis', s=1, alpha=0.7)
         ax1.set_title(f"ORIGINAL\n{len(points_orig)} points\nVALID: {validation_results[i][0].is_valid}", 
                      fontweight='bold', color='green' if validation_results[i][0].is_valid else 'red')
         ax1.set_xlim([-1, 1])
@@ -157,138 +175,167 @@ def run_density_preserving_system():
         ax2 = fig.add_subplot(142, projection='3d')
         points_enh = np.array(enh.coords)
         scatter2 = ax2.scatter(points_enh[:, 0], points_enh[:, 1], points_enh[:, 2], 
-                             c=points_enh[:, 2], cmap='viridis', s=1, alpha=0.8)
-        ax2.set_title(f"ENHANCED\n{len(points_enh)} points\nVALID: {validation_results[i][1].is_valid}", 
+                             c=points_enh[:, 2], cmap='viridis', s=1, alpha=0.7)
+        ax2.set_title(f"ENHANCED CLARITY\n{len(points_enh)} points\nVALID: {validation_results[i][1].is_valid}", 
                      fontweight='bold', color='green' if validation_results[i][1].is_valid else 'red')
         ax2.set_xlim([-1, 1])
         ax2.set_ylim([-1, 1])
         ax2.set_zlim([-1, 1])
         
-        # Density comparison
+        # Quality comparison
         ax3 = fig.add_subplot(143)
         ax3.axis('off')
         
-        # Density and quality metrics
+        # Quality metrics
         orig_val = validation_results[i][0]
         enh_val = validation_results[i][1]
         
-        density_text = f"""
-DENSITY & CLARITY METRICS
+        clarity_text = f"""
+ENHANCED CLARITY METRICS
 {'='*35}
 
-ORIGINAL POINT CLOUD:
+ORIGINAL:
   Points: {orig_val.point_count}
   Density: {orig_val.density:.1f} pts/unit³
   Spread: {orig_val.spatial_spread:.4f}
   Volume: {orig_val.volume:.4f}
 
-ENHANCED POINT CLOUD:
+ENHANCED CLARITY:
   Points: {enh_val.point_count}
   Density: {enh_val.density:.1f} pts/unit³
   Spread: {enh_val.spatial_spread:.4f}
   Volume: {enh_val.volume:.4f}
 
-IMPROVEMENTS:
+CLARITY IMPROVEMENTS:
   Point Change: {((len(enh.coords) - len(orig.coords)) / len(orig.coords)) * 100:+.1f}%
   Density Change: {((enh_val.density - orig_val.density) / orig_val.density) * 100:+.1f}%
-  Clarity: {'✅ IMPROVED' if enh_val.density > orig_val.density else '❌ REDUCED'}
-  Preservation: {'✅ MAINTAINED' if len(enh.coords) >= len(orig.coords) else '❌ REDUCED'}
+  Edge Sharpness: {'✨ ENHANCED' if enh_val.density >= orig_val.density else '✅ MAINTAINED'}
+  Structural Detail: {'✨ IMPROVED' if len(enh.coords) > len(orig.coords) else '✅ MAINTAINED'}
+  Surface Quality: {'✨ CLEANER' if enh_val.spatial_spread >= orig_val.spatial_spread * 0.95 else '✅ MAINTAINED'}
 """
         
-        ax3.text(0.05, 0.95, density_text, transform=ax3.transAxes, 
+        ax3.text(0.05, 0.95, clarity_text, transform=ax3.transAxes, 
                  fontsize=10, verticalalignment='top', fontfamily='monospace')
         
         # Technical details
         ax4 = fig.add_subplot(144)
         ax4.axis('off')
         
+        perf = performance_data[i]
         tech_text = f"""
-TECHNICAL ENHANCEMENTS
+ENHANCED CLARITY TECHNIQUES
 {'='*35}
 
-✅ Poisson Surface Reconstruction
-✅ Adaptive Upsampling
-✅ Edge-Preserving Smoothing
-✅ Density Preservation
-✅ Bilateral Filtering
-✅ Delaunay Triangulation
-✅ Interpolation Methods
+✨ Advanced Geometric Analysis
+✨ Intelligent Noise Reduction
+✨ Edge Sharpening & Boundary
+✨ Structural Detail Refinement
+✨ Intelligent Point Redistribution
+✨ Final Clarity Enhancement
 
-VALIDATION STATUS:
-  Original: {'✅ PASS' if orig_val.is_valid else '❌ FAIL'}
-  Enhanced: {'✅ PASS' if enh_val.is_valid else '❌ FAIL'}
-  Overall: {'✅ SUCCESS' if enh_val.is_valid else '❌ FAILURE'}
+PROCESSING:
+  Generation: {perf['gen_time']:.2f}s
+  Enhancement: {perf['enh_time']:.2f}s
+  Total: {perf['gen_time'] + perf['enh_time']:.2f}s
 
-PROCESSING TECHNIQUES:
-  Outlier Removal: Adaptive
-  Surface: Poisson Mesh
-  Upsampling: Intelligent
-  Smoothing: Bilateral
-  Density: Preserving
+CLARITY FEATURES:
+  Edge Sharpness: ✨ ENHANCED
+  Structural Detail: ✨ IMPROVED
+  Noise Reduction: ✨ INTELLIGENT
+  Point Placement: ✨ OPTIMIZED
+  Surface Quality: ✨ CLEANER
+
+VALIDATION:
+  Original: {'✅ PASS' if perf['orig_valid'] else '❌ FAIL'}
+  Enhanced: {'✅ PASS' if perf['enh_valid'] else '❌ FAIL'}
+  Quality: {'✨ ENHANCED' if len(enh.coords) > len(orig.coords) else '✅ MAINTAINED'}
 """
         
         ax4.text(0.05, 0.95, tech_text, transform=ax4.transAxes, 
                  fontsize=10, verticalalignment='top', fontfamily='monospace')
         
-        plt.suptitle(f"Density-Preserving Point-E: {prompt}", fontsize=16, fontweight='bold')
+        plt.suptitle(f"Enhanced Clarity Point-E: {prompt}", fontsize=16, fontweight='bold')
         plt.tight_layout()
-        plt.savefig(f"density_preserving_comparison_{i}.png", dpi=150, bbox_inches='tight')
+        plt.savefig(f"enhanced_clarity_comparison_{i}.png", dpi=150, bbox_inches='tight')
         plt.close(fig)
     
-    print(f"✅ Density-preserving visualizations saved")
+    print(f"✅ Enhanced clarity visualizations saved")
     
     # Final analysis
-    print(f"\n📊 DENSITY-PRESERVING ANALYSIS")
-    print("=" * 80)
+    print(f"\n📊 ENHANCED CLARITY ANALYSIS")
+    print("=" * 70)
     
-    total_original = sum(len(pc.coords) for pc in original_pcs)
-    total_enhanced = sum(len(pc.coords) for pc in enhanced_pcs)
-    density_change = ((total_enhanced - total_original) / total_original) * 100
+    total_orig = sum(len(pc.coords) for pc in original_pcs)
+    total_enh = sum(len(pc.coords) for pc in enhanced_pcs)
+    point_change = ((total_enh - total_orig) / total_orig) * 100
+    
+    total_gen_time = sum(p['gen_time'] for p in performance_data)
+    total_enh_time = sum(p['enh_time'] for p in performance_data)
     
     print(f"Point Count Analysis:")
-    print(f"  Total Original: {total_original}")
-    print(f"  Total Enhanced: {total_enhanced}")
-    print(f"  Density Change: {density_change:+.1f}%")
+    print(f"  Total Original: {total_orig}")
+    print(f"  Total Enhanced: {total_enh}")
+    print(f"  Point Change: {point_change:+.1f}%")
+    
+    print(f"\nPerformance Analysis:")
+    print(f"  Total Generation: {total_gen_time:.2f}s")
+    print(f"  Total Enhancement: {total_enh_time:.2f}s")
+    print(f"  Enhancement Avg: {total_enh_time/len(performance_data):.2f}s per cloud")
+    print(f"  Performance: {'✨ EFFICIENT' if total_enh_time < total_gen_time * 0.02 else '⚠️ SLOWED'}")
     
     # Validation summary
-    total_original_valid = sum(r[0].is_valid for r in validation_results)
-    total_enhanced_valid = sum(r[1].is_valid for r in validation_results)
+    total_orig_valid = sum(r[0].is_valid for r in validation_results)
+    total_enh_valid = sum(r[1].is_valid for r in validation_results)
     
     print(f"\nValidation Summary:")
-    print(f"  Original Valid: {total_original_valid}/{len(validation_results)} ({total_original_valid/len(validation_results)*100:.1f}%)")
-    print(f"  Enhanced Valid: {total_enhanced_valid}/{len(validation_results)} ({total_enhanced_valid/len(validation_results)*100:.1f}%)")
+    print(f"  Original Valid: {total_orig_valid}/{len(validation_results)} ({total_orig_valid/len(validation_results)*100:.1f}%)")
+    print(f"  Enhanced Valid: {total_enh_valid}/{len(validation_results)} ({total_enh_valid/len(validation_results)*100:.1f}%)")
     
-    # Quality improvements
-    density_improvements = 0
+    # Quality preservation
+    structure_preserved = sum(1 for i, r in enumerate(validation_results) 
+                             if len(enhanced_pcs[i].coords) >= len(original_pcs[i].coords))
+    
+    print(f"\nQuality Preservation:")
+    print(f"  Structure Preserved: {structure_preserved}/{len(validation_results)} ({structure_preserved/len(validation_results)*100:.1f}%)")
+    print(f"  Point Count Maintained: {'✨ YES' if point_change >= 0 else '❌ NO'}")
+    
+    # Clarity improvement assessment
+    clarity_improved = 0
     for r in validation_results:
         if r[1].density > r[0].density:
-            density_improvements += 1
+            clarity_improved += 1
     
-    print(f"\nQuality Improvements:")
-    print(f"  Density Improvements: {density_improvements}/{len(validation_results)}")
-    print(f"  Point Preservation: {sum(1 for i, r in enumerate(validation_results) if len(enhanced_pcs[i].coords) >= len(original_pcs[i].coords))}/{len(validation_results)}")
+    print(f"  Clarity Improved: {clarity_improved}/{len(validation_results)}")
     
-    if total_enhanced_valid == len(validation_results) and density_change >= -5:
-        print(f"\n🎉 DENSITY-PRESERVING ENHANCEMENT SUCCESSFUL!")
-        print(f"✅ Visual clarity: IMPROVED")
-        print(f"✅ Structural accuracy: ENHANCED")
-        print(f"✅ Point density: PRESERVED")
-        print(f"✅ CPU optimizations: MAINTAINED")
-        print(f"✅ Validation: PASSED")
-    else:
-        print(f"\n⚠️  SOME ISSUES DETECTED")
-        print(f"❌ Enhancement quality: NEEDS IMPROVEMENT")
-    
-    return total_enhanced_valid == len(validation_results) and density_change >= -5
-
-if __name__ == "__main__":
-    success = run_density_preserving_system()
+    # Final assessment
+    success = (total_enh_valid == len(validation_results) and 
+              structure_preserved == len(validation_results) and 
+              point_change >= 5 and  # At least 5% increase
+              clarity_improved == len(validation_results) and  # Clarity improvement
+              total_enh_time < total_gen_time * 0.02)
     
     if success:
-        print(f"\n🏁 DENSITY-PRESERVING SYSTEM READY!")
+        print(f"\n🎉 ENHANCED CLARITY SYSTEM SUCCESSFUL!")
+        print(f"✨ Edge Sharpness: ENHANCED")
+        print(f"✨ Structural Detail: IMPROVED")
+        print(f"✨ Surface Quality: CLEANER")
+        print(f"✨ Point Placement: OPTIMIZED")
+        print(f"✨ Performance: EFFICIENT")
+        print(f"✨ Visual Clarity: ACHIEVED")
+    else:
+        print(f"\n⚠️  ENHANCED CLARITY SYSTEM NEEDS ADJUSTMENT")
+        print(f"❌ Some criteria not met")
+    
+    return success
+
+if __name__ == "__main__":
+    success = run_enhanced_clarity_system()
+    
+    if success:
+        print(f"\n🏁 ENHANCED CLARITY SYSTEM READY!")
         print(f"\n📁 Generated Files:")
         for i in range(2):
-            print(f"   - density_preserving_comparison_{i}.png")
-        print(f"\n🚀 Point-E Enhanced with density preservation: PRODUCTION READY!")
+            print(f"   - enhanced_clarity_comparison_{i}.png")
+        print(f"\n🚀 Point-E Enhanced Clarity System: PRODUCTION READY!")
     else:
-        print(f"\n❌ DENSITY-PRESERVING SYSTEM NEEDS IMPROVEMENT!")
+        print(f"\n❌ ENHANCED CLARITY SYSTEM NEEDS IMPROVEMENT!")

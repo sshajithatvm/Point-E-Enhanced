@@ -11,7 +11,7 @@ class ProductionEnhancer:
     Features automatic PLY export with unique naming and proper folder structure.
     """
     
-    def __init__(self, output_dir="enhanced_outputs"):
+    def __init__(self, output_dir="outputs/enhanced_outputs"):
         """
         Initialize the production enhancer.
         

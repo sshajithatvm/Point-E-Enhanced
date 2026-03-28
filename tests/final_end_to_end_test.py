@@ -1,15 +1,81 @@
 #!/usr/bin/env python3
 
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import torch
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from tqdm.auto import tqdm
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import matplotlib.pyplot as plt
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import numpy as np
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import time
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e.diffusion.configs import DIFFUSION_CONFIGS, diffusion_from_config
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e.diffusion.sampler import PointCloudSampler
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e.models.download import load_checkpoint
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e.models.configs import MODEL_CONFIGS, model_from_config
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e.util.plotting import plot_point_cloud
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e.enhancements.applyenhancements import enhance_point_cloud
 
 def main():
@@ -106,8 +172,8 @@ def main():
     print(f"⏱️  Total Time: {load_time + generation_time + enhancement_time:.2f}s")
     print(f"📁 Files Created:")
     print(f"   - final_end_to_end_test.png")
-    print(f"   - enhanced_outputs/ply_files/")
-    print(f"   - enhanced_outputs/metadata/")
+    print(f"   - outputs/enhanced_outputs/ply_files/")
+    print(f"   - outputs/enhanced_outputs/metadata/")
     
     return True
 

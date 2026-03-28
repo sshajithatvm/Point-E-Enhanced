@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import time
 import multiprocessing as mp
 import psutil
@@ -207,11 +213,11 @@ def run_optimized_pointe_final():
     ply_files = []
     metadata_files = []
     
-    if os.path.exists('enhanced_outputs/ply_files'):
-        ply_files = [f for f in os.listdir('enhanced_outputs/ply_files') if f.endswith('.ply')]
+    if os.path.exists('outputs/enhanced_outputs/ply_files'):
+        ply_files = [f for f in os.listdir('outputs/enhanced_outputs/ply_files') if f.endswith('.ply')]
     
-    if os.path.exists('enhanced_outputs/metadata'):
-        metadata_files = [f for f in os.listdir('enhanced_outputs/metadata') if f.endswith('.json')]
+    if os.path.exists('outputs/enhanced_outputs/metadata'):
+        metadata_files = [f for f in os.listdir('outputs/enhanced_outputs/metadata') if f.endswith('.json')]
     
     print(f"\n📁 GENERATED FILES:")
     print(f"  PLY Files: {len(ply_files)}")

@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import time
 import multiprocessing as mp
 import psutil
@@ -201,7 +207,7 @@ QUALITY METRICS:
         
         plt.suptitle(f"VALIDATED Point-E: {prompt}", fontsize=16, fontweight='bold')
         plt.tight_layout()
-        plt.savefig(f"validated_comparison_{i}.png", dpi=150, bbox_inches='tight')
+        plt.savefig(f"outputs/validated_comparison_{i}.png", dpi=150, bbox_inches='tight')
         plt.close(fig)
     
     print(f"✅ Validated visualizations saved")

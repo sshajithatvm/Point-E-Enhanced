@@ -1,8 +1,32 @@
 #!/usr/bin/env python3
 
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import time
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import multiprocessing as mp
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e_optimized import PointEGenerator, PointCloudProcessor, PointCloudVisualizer, setup_logging, PerformanceMonitor
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e_optimized.core import GenerationConfig
 
 def benchmark_optimized_system():

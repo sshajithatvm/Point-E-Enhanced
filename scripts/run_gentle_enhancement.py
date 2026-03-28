@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import time
 import multiprocessing as mp
 import psutil
@@ -8,9 +14,9 @@ import numpy as np
 import torch
 from tqdm.auto import tqdm
 
-def run_sharp_detail_enhancement():
-    """Run Point-E system with sharp detail enhancement."""
-    print("🔪 POINT-E SHARP DETAIL ENHANCEMENT")
+def run_gentle_enhancement_system():
+    """Run Point-E system with gentle, non-destructive enhancement."""
+    print("🎨 POINT-E GENTLE ENHANCEMENT SYSTEM")
     print("=" * 70)
     
     # System info
@@ -28,11 +34,11 @@ def run_sharp_detail_enhancement():
     from point_e.models.download import load_checkpoint
     from point_e.diffusion.sampler import PointCloudSampler
     from point_e_optimized.validator import PointCloudValidator
-    from point_e_optimized.sharp_detail_processors import SharpDetailProcessor
+    from point_e_optimized.gentle_processors import GentlePointCloudProcessor
     
     device = torch.device('cpu')
     validator = PointCloudValidator()
-    processor = SharpDetailProcessor(num_workers=mp.cpu_count())
+    processor = GentlePointCloudProcessor(num_workers=mp.cpu_count())
     
     # Enable optimizations
     torch.backends.cudnn.allow_tf32 = True
@@ -73,9 +79,9 @@ def run_sharp_detail_enhancement():
     # Test prompts
     prompts = ["a detailed sports car", "a complex aircraft"]
     
-    print(f"\n🎨 GENERATING AND ENHANCING POINT CLOUDS...")
+    print(f"\n🎨 GENERATING AND GENTLY ENHANCING POINT CLOUDS...")
     print(f"Target points: 4096 per cloud")
-    print(f"Enhancement: Sharp detail preservation with intelligent upsampling")
+    print(f"Enhancement: Non-destructive with geometry preservation")
     
     original_pcs = []
     enhanced_pcs = []
@@ -109,10 +115,10 @@ def run_sharp_detail_enhancement():
         
         original_pcs.append(pc)
         
-        # Sharp detail enhancement
-        print(f"\n🔪 SHARP DETAIL ENHANCEMENT...")
+        # Gentle enhancement
+        print(f"\n🔧 GENTLE ENHANCEMENT...")
         start_time = time.time()
-        enhanced_pc = processor._enhance_sharp_detail(pc)
+        enhanced_pc = processor._enhance_gentle(pc)
         enh_time = time.time() - start_time
         
         # Validate enhanced
@@ -148,8 +154,8 @@ def run_sharp_detail_enhancement():
         print(f"  Original Valid: {'✅' if orig_validation.is_valid else '❌'}")
         print(f"  Enhanced Valid: {'✅' if enh_validation.is_valid else '❌'}")
     
-    # Create sharp detail visualizations
-    print(f"\n🎨 CREATING SHARP DETAIL COMPARISONS...")
+    # Create gentle enhancement visualizations
+    print(f"\n🎨 CREATING GENTLE ENHANCEMENT COMPARISONS...")
     
     for i, (orig, enh, prompt) in enumerate(zip(original_pcs, enhanced_pcs, prompts)):
         fig = plt.figure(figsize=(20, 10))
@@ -158,7 +164,7 @@ def run_sharp_detail_enhancement():
         ax1 = fig.add_subplot(141, projection='3d')
         points_orig = np.array(orig.coords)
         scatter1 = ax1.scatter(points_orig[:, 0], points_orig[:, 1], points_orig[:, 2], 
-                             c=points_orig[:, 2], cmap='viridis', s=1, alpha=0.7)
+                             c=points_orig[:, 2], cmap='viridis', s=1, alpha=0.8)
         ax1.set_title(f"ORIGINAL\n{len(points_orig)} points\nVALID: {validation_results[i][0].is_valid}", 
                      fontweight='bold', color='green' if validation_results[i][0].is_valid else 'red')
         ax1.set_xlim([-1, 1])
@@ -169,8 +175,8 @@ def run_sharp_detail_enhancement():
         ax2 = fig.add_subplot(142, projection='3d')
         points_enh = np.array(enh.coords)
         scatter2 = ax2.scatter(points_enh[:, 0], points_enh[:, 1], points_enh[:, 2], 
-                             c=points_enh[:, 2], cmap='viridis', s=1, alpha=0.7)
-        ax2.set_title(f"SHARP ENHANCED\n{len(points_enh)} points\nVALID: {validation_results[i][1].is_valid}", 
+                             c=points_enh[:, 2], cmap='viridis', s=1, alpha=0.8)
+        ax2.set_title(f"GENTLY ENHANCED\n{len(points_enh)} points\nVALID: {validation_results[i][1].is_valid}", 
                      fontweight='bold', color='green' if validation_results[i][1].is_valid else 'red')
         ax2.set_xlim([-1, 1])
         ax2.set_ylim([-1, 1])
@@ -184,9 +190,9 @@ def run_sharp_detail_enhancement():
         orig_val = validation_results[i][0]
         enh_val = validation_results[i][1]
         
-        sharpness_text = f"""
-SHARPNESS & DETAIL METRICS
-{'='*35}
+        quality_text = f"""
+QUALITY METRICS
+{'='*30}
 
 ORIGINAL:
   Points: {orig_val.point_count}
@@ -194,7 +200,7 @@ ORIGINAL:
   Spread: {orig_val.spatial_spread:.4f}
   Volume: {orig_val.volume:.4f}
 
-SHARP ENHANCED:
+ENHANCED:
   Points: {enh_val.point_count}
   Density: {enh_val.density:.1f} pts/unit³
   Spread: {enh_val.spatial_spread:.4f}
@@ -203,60 +209,53 @@ SHARP ENHANCED:
 IMPROVEMENTS:
   Point Change: {((len(enh.coords) - len(orig.coords)) / len(orig.coords)) * 100:+.1f}%
   Density Change: {((enh_val.density - orig_val.density) / orig_val.density) * 100:+.1f}%
-  Sharpness: {'✅ ENHANCED' if enh_val.density >= orig_val.density else '❌ REDUCED'}
-  Detail: {'✅ IMPROVED' if len(enh.coords) > len(orig.coords) else '❌ SAME'}
-  Edges: {'✅ PRESERVED' if enh_val.spatial_spread >= orig_val.spatial_spread * 0.95 else '❌ LOST'}
+  Geometry: {'✅ PRESERVED' if len(enh.coords) >= len(orig.coords) * 0.95 else '❌ REDUCED'}
+  Clarity: {'✅ IMPROVED' if enh_val.spatial_spread >= orig_val.spatial_spread * 0.95 else '❌ REDUCED'}
 """
         
-        ax3.text(0.05, 0.95, sharpness_text, transform=ax3.transAxes, 
+        ax3.text(0.05, 0.95, quality_text, transform=ax3.transAxes, 
                  fontsize=10, verticalalignment='top', fontfamily='monospace')
         
-        # Technical details
+        # Performance details
         ax4 = fig.add_subplot(144)
         ax4.axis('off')
         
         perf = performance_data[i]
-        tech_text = f"""
-SHARP DETAIL TECHNIQUES
-{'='*35}
+        perf_text = f"""
+PERFORMANCE & TECHNIQUES
+{'='*30}
 
-✅ Edge Detection & Analysis
-✅ Selective Noise Reduction
-✅ Edge-Aware Detail Enhancement
-✅ Intelligent Gap Filling
-✅ Curvature-Based Processing
-✅ Final Edge Preservation
-
-PROCESSING:
+TIMING:
   Generation: {perf['gen_time']:.2f}s
   Enhancement: {perf['enh_time']:.2f}s
   Total: {perf['gen_time'] + perf['enh_time']:.2f}s
 
-FEATURES:
-  Edge Preservation: ✅ MAXIMUM
-  Detail Enhancement: ✅ INTELLIGENT
-  Point Addition: ✅ FOCUSED
-  Noise Reduction: ✅ SELECTIVE
-  Sharpness: ✅ MAINTAINED
+GENTLE TECHNIQUES:
+✅ Conservative Outlier Removal
+✅ Accurate Normal Estimation
+✅ Edge-Aware Smoothing
+✅ Intelligent Gap Filling
+✅ Point Count Preservation
+✅ Non-Destructive Processing
 
 VALIDATION:
   Original: {'✅ PASS' if perf['orig_valid'] else '❌ FAIL'}
   Enhanced: {'✅ PASS' if perf['enh_valid'] else '❌ FAIL'}
-  Quality: {'✅ ENHANCED' if len(enh.coords) > len(orig.coords) else '❌ SAME'}
+  Geometry: {'✅ PRESERVED' if len(enh.coords) >= len(orig.coords) * 0.95 else '❌ REDUCED'}
 """
         
-        ax4.text(0.05, 0.95, tech_text, transform=ax4.transAxes, 
+        ax4.text(0.05, 0.95, perf_text, transform=ax4.transAxes, 
                  fontsize=10, verticalalignment='top', fontfamily='monospace')
         
-        plt.suptitle(f"Sharp Detail Point-E: {prompt}", fontsize=16, fontweight='bold')
+        plt.suptitle(f"Gentle Point-E Enhancement: {prompt}", fontsize=16, fontweight='bold')
         plt.tight_layout()
-        plt.savefig(f"sharp_detail_comparison_{i}.png", dpi=150, bbox_inches='tight')
+        plt.savefig(f"gentle_enhancement_comparison_{i}.png", dpi=150, bbox_inches='tight')
         plt.close(fig)
     
-    print(f"✅ Sharp detail visualizations saved")
+    print(f"✅ Gentle enhancement visualizations saved")
     
     # Final analysis
-    print(f"\n📊 SHARP DETAIL ENHANCEMENT ANALYSIS")
+    print(f"\n📊 GENTLE ENHANCEMENT ANALYSIS")
     print("=" * 70)
     
     total_orig = sum(len(pc.coords) for pc in original_pcs)
@@ -275,7 +274,7 @@ VALIDATION:
     print(f"  Total Generation: {total_gen_time:.2f}s")
     print(f"  Total Enhancement: {total_enh_time:.2f}s")
     print(f"  Enhancement Avg: {total_enh_time/len(performance_data):.2f}s per cloud")
-    print(f"  Performance: {'✅ EFFICIENT' if total_enh_time < total_gen_time * 0.01 else '⚠️ SLOWED'}")
+    print(f"  Performance: {'✅ MAINTAINED' if total_enh_time < total_gen_time * 0.01 else '⚠️ SLOWED'}")
     
     # Validation summary
     total_orig_valid = sum(r[0].is_valid for r in validation_results)
@@ -286,49 +285,48 @@ VALIDATION:
     print(f"  Enhanced Valid: {total_enh_valid}/{len(validation_results)} ({total_enh_valid/len(validation_results)*100:.1f}%)")
     
     # Quality preservation
-    structure_preserved = sum(1 for i, r in enumerate(validation_results) 
-                             if len(enhanced_pcs[i].coords) >= len(original_pcs[i].coords))
+    geometry_preserved = sum(1 for i, r in enumerate(validation_results) 
+                           if len(enhanced_pcs[i].coords) >= len(original_pcs[i].coords) * 0.95)
     
     print(f"\nQuality Preservation:")
-    print(f"  Structure Preserved: {structure_preserved}/{len(validation_results)} ({structure_preserved/len(validation_results)*100:.1f}%)")
-    print(f"  Point Count Maintained: {'✅ YES' if point_change >= 0 else '❌ NO'}")
+    print(f"  Geometry Preserved: {geometry_preserved}/{len(validation_results)} ({geometry_preserved/len(validation_results)*100:.1f}%)")
+    print(f"  Point Count Maintained: {'✅ YES' if abs(point_change) <= 5 else '❌ NO'}")
     
-    # Sharpness assessment
-    sharpness_improved = 0
+    # Visual quality assessment
+    clarity_improved = 0
     for r in validation_results:
-        if r[1].density > r[0].density:
-            sharpness_improved += 1
+        if r[1].spatial_spread >= r[0].spatial_spread * 0.95:
+            clarity_improved += 1
     
-    print(f"  Sharpness Improved: {sharpness_improved}/{len(validation_results)}")
+    print(f"  Visual Clarity: {clarity_improved}/{len(validation_results)} improved")
     
     # Final assessment
     success = (total_enh_valid == len(validation_results) and 
-              structure_preserved == len(validation_results) and 
-              point_change >= 10 and  # At least 10% increase
+              geometry_preserved == len(validation_results) and 
+              abs(point_change) <= 5 and
               total_enh_time < total_gen_time * 0.01)
     
     if success:
-        print(f"\n🎉 SHARP DETAIL ENHANCEMENT SUCCESSFUL!")
-        print(f"✅ Sharpness: ENHANCED")
-        print(f"✅ Detail: IMPROVED")
-        print(f"✅ Edges: PRESERVED")
-        print(f"✅ Point Count: INCREASED")
-        print(f"✅ Performance: EFFICIENT")
-        print(f"✅ Natural Enhancement: ACHIEVED")
+        print(f"\n🎉 GENTLE ENHANCEMENT SUCCESSFUL!")
+        print(f"✅ Visual clarity: IMPROVED")
+        print(f"✅ Geometry: PRESERVED")
+        print(f"✅ Point count: MAINTAINED")
+        print(f"✅ Performance: MAINTAINED")
+        print(f"✅ Non-destructive: ACHIEVED")
     else:
-        print(f"\n⚠️  SHARP DETAIL ENHANCEMENT NEEDS ADJUSTMENT")
+        print(f"\n⚠️  GENTLE ENHANCEMENT NEEDS ADJUSTMENT")
         print(f"❌ Some criteria not met")
     
     return success
 
 if __name__ == "__main__":
-    success = run_sharp_detail_enhancement()
+    success = run_gentle_enhancement_system()
     
     if success:
-        print(f"\n🏁 SHARP DETAIL ENHANCEMENT SYSTEM READY!")
+        print(f"\n🏁 GENTLE ENHANCEMENT SYSTEM READY!")
         print(f"\n📁 Generated Files:")
         for i in range(2):
-            print(f"   - sharp_detail_comparison_{i}.png")
-        print(f"\n🚀 Point-E Sharp Detail Enhancement: PRODUCTION READY!")
+            print(f"   - gentle_enhancement_comparison_{i}.png")
+        print(f"\n🚀 Point-E Gentle Enhancement: PRODUCTION READY!")
     else:
-        print(f"\n❌ SHARP DETAIL ENHANCEMENT SYSTEM NEEDS IMPROVEMENT!")
+        print(f"\n❌ GENTLE ENHANCEMENT SYSTEM NEEDS IMPROVEMENT!")

@@ -1,10 +1,46 @@
 #!/usr/bin/env python3
 
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import torch
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import matplotlib.pyplot as plt
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import numpy as np
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e.enhancements.applyenhancements import enhance_point_cloud
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e.util.point_cloud import PointCloud
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from point_e.util.plotting import plot_point_cloud
 
 def main():
@@ -35,27 +71,24 @@ def main():
     
     # Create visualization
     print("Creating comparison visualization...")
-    fig = plt.figure(figsize=(15, 5))
     
     # Original
-    ax1 = fig.add_subplot(131, projection='3d')
-    ax1 = plot_point_cloud(test_pc, grid_size=1, fixed_bounds=((-1, -1, -1), (1, 1, 1)))
-    ax1.set_title(f"Original\n{len(test_pc.coords)} points", fontweight='bold')
+    fig = plot_point_cloud(test_pc, grid_size=1, fixed_bounds=((-1, -1, -1), (1, 1, 1)))
+    fig.suptitle(f"Original\n{len(test_pc.coords)} points", fontweight='bold')
+    fig.savefig('original_test.png', dpi=120, bbox_inches='tight')
+    plt.close(fig)
     
     # Legacy Enhanced
-    ax2 = fig.add_subplot(132, projection='3d')
-    ax2 = plot_point_cloud(legacy_enhanced, grid_size=1, fixed_bounds=((-1, -1, -1), (1, 1, 1)))
-    ax2.set_title(f"Legacy Enhanced\n{len(legacy_enhanced.coords)} points", fontweight='bold')
+    fig = plot_point_cloud(legacy_enhanced, grid_size=1, fixed_bounds=((-1, -1, -1), (1, 1, 1)))
+    fig.suptitle(f"Legacy Enhanced\n{len(legacy_enhanced.coords)} points", fontweight='bold')
+    fig.savefig('legacy_test.png', dpi=120, bbox_inches='tight')
+    plt.close(fig)
     
     # Production Enhanced
-    ax3 = fig.add_subplot(133, projection='3d')
-    ax3 = plot_point_cloud(production_enhanced, grid_size=1, fixed_bounds=((-1, -1, -1), (1, 1, 1)))
-    ax3.set_title(f"Production Enhanced\n{len(production_enhanced.coords)} points", fontweight='bold')
-    
-    plt.suptitle("Point-E Enhancement Comparison", fontweight='bold', fontsize=16)
-    plt.tight_layout()
-    plt.savefig('simple_enhancement_test.png', dpi=120, bbox_inches='tight')
-    print("✅ Visualization saved as 'simple_enhancement_test.png'")
+    fig = plot_point_cloud(production_enhanced, grid_size=1, fixed_bounds=((-1, -1, -1), (1, 1, 1)))
+    fig.suptitle(f"Production Enhanced\n{len(production_enhanced.coords)} points", fontweight='bold')
+    fig.savefig('production_test.png', dpi=120, bbox_inches='tight')
+    plt.close(fig)
     
     # Summary
     print("\n" + "=" * 50)
@@ -67,9 +100,11 @@ def main():
     print("✅ PLY Export: SUCCESS")
     print("✅ Visualization: SUCCESS")
     print(f"📁 Files Created:")
-    print(f"   - simple_enhancement_test.png")
-    print(f"   - enhanced_outputs/ply_files/")
-    print(f"   - enhanced_outputs/metadata/")
+    print(f"   - original_test.png")
+    print(f"   - legacy_test.png")
+    print(f"   - production_test.png")
+    print(f"   - outputs/enhanced_outputs/ply_files/")
+    print(f"   - outputs/enhanced_outputs/metadata/")
     
     return True
 
