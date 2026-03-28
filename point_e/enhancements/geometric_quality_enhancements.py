@@ -31,6 +31,15 @@ def statistical_outlier_removal(points: np.ndarray) -> np.ndarray:
     Returns:
         Original point cloud [N, 3] (completely unchanged)
     """
+    # Validate input
+    if len(points) == 0:
+        logger.debug("Empty point cloud, skipping statistical outlier analysis")
+        return points
+
+    if not np.isfinite(points).all():
+        logger.warning("Point cloud contains NaN or Inf values, skipping statistical outlier analysis")
+        return points
+
     if not OPEN3D_AVAILABLE:
         logger.warning("Open3D not available, skipping statistical outlier analysis")
         return points
@@ -65,6 +74,15 @@ def knn_pca_normal_refinement(points: np.ndarray) -> np.ndarray:
     Returns:
         Original point cloud [N, 3] (completely unchanged)
     """
+    # Validate input
+    if len(points) < 3:  # Need at least 3 points for meaningful normal estimation
+        logger.debug(f"Point cloud too small ({len(points)} points), skipping k-NN/PCA normal analysis")
+        return points
+
+    if not np.isfinite(points).all():
+        logger.warning("Point cloud contains NaN or Inf values, skipping k-NN/PCA normal analysis")
+        return points
+
     if not OPEN3D_AVAILABLE:
         logger.warning("Open3D not available, skipping k-NN/PCA normal analysis")
         return points
@@ -120,8 +138,13 @@ def enhance_point_cloud_quality(pc: PointCloud, num_iterations: int = 1) -> Poin
         points = knn_pca_normal_refinement(points)
 
     # Verify that points are COMPLETELY UNCHANGED
-    if not np.array_equal(points, np.array(pc.coords)):
+    original_coords = np.array(pc.coords)
+    if not np.array_equal(points, original_coords, equal_nan=True):
         logger.error("CRITICAL ERROR: Point coordinates were modified during analysis!")
+        logger.error(f"Original shape: {original_coords.shape}, Modified shape: {points.shape}")
+        # Check first few coordinates for debugging
+        if len(original_coords) > 0 and len(points) > 0:
+            logger.error(f"Original[0]: {original_coords[0]}, Modified[0]: {points[0]}")
         raise ValueError("Point coordinates must never be modified")
 
     if len(points) != original_count:
