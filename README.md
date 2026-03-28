@@ -1,6 +1,8 @@
 # Point·E Enhanced
 
-![Animation of four 3D point clouds rotating](point_e/examples/paper_banner.gif)
+Point-E Enhancement using Windsurf Model Pipeline
+
+Overview
 
 This is the enhanced code and model release for [Point-E: A System for Generating 3D Point Clouds from Complex Prompts](https://arxiv.org/abs/2212.08751) with production-ready optimizations and organized structure.
 
@@ -63,9 +65,30 @@ Point-E-Enhanced-WindSurf-Model/
 ```
 
 ## Installation
+=======
+This project refactors the original Point-E pipeline into a more efficient, reliable, and quality-focused system. The goal is to improve point cloud clarity, structure, and validation while keeping performance optimized for CPU environments.
 
-Install with `pip install -e .`.
+Key Improvements
+>>>>>>> 803a0bef6e7237cac44c5e0148a4bad376724174
 
+1. Performance Optimization
+CPU-friendly execution (multiprocessing + batching)
+Reduced runtime without breaking pipeline flow
+Clean modular architecture for scalability
+2. Point Cloud Quality Enhancements
+Improved edge sharpness and structural clarity
+Adaptive density (more points in edges/curves, fewer in flat areas)
+Reduced noise with controlled smoothing (no over-blur)
+Avoided destructive downsampling
+3. Intelligent Upsampling
+Geometry-aware point addition instead of uniform distribution
+Focus on:
+Edges
+High-curvature regions
+Sparse areas
+4. Validation Layer
+
+<<<<<<< HEAD
 For optimized dependencies:
 ```bash
 pip install -r configs/requirements_optimized.txt
@@ -77,9 +100,12 @@ pip install -r configs/requirements_optimized.txt
 
 To get started with examples, see the following notebooks:
 
- * [image2pointcloud.ipynb](point_e/examples/image2pointcloud.ipynb) - sample a point cloud, conditioned on some example synthetic view images.
- * [text2pointcloud.ipynb](point_e/examples/text2pointcloud.ipynb) - use our small, worse quality pure text-to-3D model to produce 3D point clouds directly from text descriptions. This model's capabilities are limited, but it does understand some simple categories and colors.
- * [pointcloud2mesh.ipynb](point_e/examples/pointcloud2mesh.ipynb) - try our SDF regression model for producing meshes from point clouds.
+Strict validation added before saving outputs:
+
+Non-empty point cloud
+No NaN / infinite values
+Minimum point count check
+Valid bounding box with proper spatial spread
 
 ### Running Enhanced Scripts
 
