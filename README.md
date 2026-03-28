@@ -28,6 +28,32 @@ You can download the seed images and point clouds corresponding to the paper ban
 You can download the seed images used for COCO CLIP R-Precision evaluations [here](https://openaipublic.azureedge.net/main/point-e/coco_images.zip).
 
 
+# Project Structure
+
+This project has been organized into a clean, production-ready structure:
+
+```
+├── docs/                    # Documentation and guides
+├── examples/               # Demo scripts and Jupyter notebooks
+├── models/                 # Model checkpoints and cached data
+├── point_e/               # Main Point-E package
+├── results/               # Output directories and results
+├── scripts/               # Utility scripts and pipelines
+├── tests/                 # Test files and validation scripts
+├── requirements.txt       # Python dependencies
+├── setup.py              # Package setup
+└── README.md             # This file
+```
+
+## Directory Contents
+
+- **docs/**: Documentation, guides, and reports
+- **examples/**: Demo scripts, notebooks, and example usage
+- **models/**: Pre-trained model checkpoints and cached data
+- **results/**: Generated point clouds, logs, and comparison outputs
+- **scripts/**: Production scripts and optimized pipelines
+- **tests/**: Unit tests, integration tests, and validation scripts
+
 # How to Run
 You can run the code exactly as you would with the original Point-E version. No changes are required in the execution commands or workflow.
 
