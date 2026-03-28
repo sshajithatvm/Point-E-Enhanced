@@ -50,12 +50,20 @@ class AdvancedPointCloudProcessor:
     
     def _enhance_single_advanced(self, pc) -> object:
         """Enhance single point cloud with density-preserving techniques."""
-        points = np.array(pc.coords)
+        try:
+            points = np.array(pc.coords)
+        except Exception as e:
+            self.logger.error(f"Failed to extract points from point cloud: {e}")
+            return pc
+            
         original_count = len(points)
         
         # Pre-validation
-        if len(points) < 50:
-            self.logger.warning(f"Point cloud too small for enhancement: {len(points)} points")
+        if original_count == 0:
+            self.logger.warning("Empty point cloud - skipping enhancement")
+            return pc
+        elif original_count < 50:
+            self.logger.warning(f"Point cloud too small for enhancement: {original_count} points")
             return pc
         
         # Step 1: Advanced outlier removal (preserves density)
@@ -177,13 +185,22 @@ class AdvancedPointCloudProcessor:
         if current_count >= target_count:
             return points
         
+        # Memory usage check for large grids
+        max_grid_points = 1000000  # 1M points limit
+        grid_factor = int(np.ceil(target_count ** (1/3) * 1.2))
+        estimated_grid_points = grid_factor ** 3
+        
+        if estimated_grid_points > max_grid_points:
+            self.logger.warning(f"Grid too large ({estimated_grid_points} points), using fallback upsampling")
+            # Simple linear interpolation fallback
+            return self._simple_linear_upsample(points, target_count)
+        
         # Create interpolation grid
         x_min, x_max = points[:, 0].min(), points[:, 0].max()
         y_min, y_max = points[:, 1].min(), points[:, 1].max()
         z_min, z_max = points[:, 2].min(), points[:, 2].max()
         
         # Generate grid points
-        grid_factor = int(np.ceil(target_count ** (1/3) * 1.2))
         xi = np.linspace(x_min, x_max, grid_factor)
         yi = np.linspace(y_min, y_max, grid_factor)
         zi = np.linspace(z_min, z_max, grid_factor)
@@ -210,6 +227,30 @@ class AdvancedPointCloudProcessor:
         except Exception as e:
             self.logger.warning(f"Interpolation upsampling failed: {e}")
             return points
+    
+    def _simple_linear_upsample(self, points: np.ndarray, target_count: int) -> np.ndarray:
+        """Simple linear upsampling with memory safety."""
+        current_count = len(points)
+        
+        if current_count >= target_count:
+            return points
+        
+        # Simple linear interpolation between existing points
+        points_needed = target_count - current_count
+        new_points = []
+        
+        for i in range(points_needed):
+            # Pick two random points and interpolate
+            idx1, idx2 = np.random.choice(current_count, 2, replace=False)
+            t = np.random.random()
+            new_point = points[idx1] * (1 - t) + points[idx2] * t
+            new_points.append(new_point)
+        
+        if new_points:
+            combined = np.vstack([points, np.array(new_points)])
+            return combined[:target_count]
+        
+        return points
     
     def _edge_preserving_smoothing(self, points: np.ndarray) -> np.ndarray:
         """Edge-preserving bilateral smoothing."""

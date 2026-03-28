@@ -75,8 +75,10 @@ class PointCloudValidator:
             if volume <= 0:
                 errors.append(f"Invalid volume: {volume}")
             
-            # Calculate density
-            density = point_count / volume if volume > 0 else 0
+            # Calculate density with safety checks
+            min_volume = 1e-8  # Minimum volume threshold
+            safe_volume = max(volume, min_volume)
+            density = point_count / safe_volume
             if density < 1.0:  # Very low density
                 errors.append(f"Very low density: {density:.3f}")
             

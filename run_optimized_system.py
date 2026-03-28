@@ -5,6 +5,8 @@ import os
 import time
 import multiprocessing as mp
 from pathlib import Path
+import psutil
+import matplotlib.pyplot as plt
 
 # Add optimized module to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -135,11 +137,8 @@ def main():
         return False
 
 if __name__ == "__main__":
-    import psutil
-    import matplotlib.pyplot as plt
-    
     success = main()
-    
+    sys.exit(0 if success else 1)
     if success:
         print(f"\n🏁 PRODUCTION SYSTEM READY!")
         print(f"\n📁 Generated Files:")

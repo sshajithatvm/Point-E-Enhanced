@@ -1,0 +1,40 @@
+# Virtual environments
+point_e_clean_env/
+point_e_optimized_env/
+
+# Model cache files
+point_e_model_cache/
+*.pt
+*.pth
+*.pkl
+*.pickle
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Enhanced outputs
+enhanced_outputs/
+*.ply
+
+# Temporary files
+tmp/
+temp/

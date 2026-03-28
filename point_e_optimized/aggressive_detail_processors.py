@@ -49,12 +49,20 @@ class AggressiveDetailProcessor:
     
     def _enhance_aggressive_detail(self, pc) -> object:
         """Aggressive enhancement with clearly visible improvements."""
-        points = np.array(pc.coords)
+        try:
+            points = np.array(pc.coords)
+        except Exception as e:
+            self.logger.error(f"Failed to extract points from point cloud: {e}")
+            return pc
+            
         original_count = len(points)
         
         # Pre-validation
-        if len(points) < 50:
-            self.logger.warning(f"Point cloud too small for enhancement: {len(points)} points")
+        if original_count == 0:
+            self.logger.warning("Empty point cloud - skipping enhancement")
+            return pc
+        elif original_count < 50:
+            self.logger.warning(f"Point cloud too small for enhancement: {original_count} points")
             return pc
         
         # Step 1: Preserve all original points
@@ -105,7 +113,7 @@ class AggressiveDetailProcessor:
                     eigenvectors = eigenvectors[:, idx]
                     
                     # Enhanced edge detection using multiple criteria
-                    if eigenvalues[2] > 1e-8:
+                    if eigenvalues[2] > 1e-8 and len(eigenvectors) >= 3:
                         # Planarity (surface vs. line/point)
                         planarity = eigenvalues[0] / eigenvalues[2]
                         linearity = eigenvalues[1] / eigenvalues[2]
