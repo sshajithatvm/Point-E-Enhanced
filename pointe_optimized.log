@@ -1,0 +1,22 @@
+2026-03-26 17:35:05,917 - point_e_optimized.core - INFO - Generating 3 point clouds...
+2026-03-26 17:35:05,917 - point_e_optimized.core - INFO - Loading optimized models...
+2026-03-26 17:35:21,330 - point_e_optimized.utils - ERROR - System execution failed: 
+Unknown type constructor Callable:
+  File "C:\Projects\Point-E-Enhanced-WindSurf-Model\point_e\models\checkpoint.py", line 11
+def checkpoint(
+    func: Callable[..., Union[torch.Tensor, Sequence[torch.Tensor]]],
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ <--- HERE
+    inputs: Sequence[torch.Tensor],
+    params: Iterable[torch.Tensor],
+'checkpoint' is being compiled since it was called from 'MultiheadAttention.forward'
+  File "C:\Projects\Point-E-Enhanced-WindSurf-Model\point_e\models\transformer.py", line 46
+    def forward(self, x):
+        x = self.c_qkv(x)
+        x = checkpoint(self.attention, (x,), (), True)
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ <--- HERE
+        x = self.c_proj(x)
+        return x
+
+2026-03-26 17:35:53,036 - point_e_optimized.core - INFO - Generating 3 point clouds...
+2026-03-26 17:35:53,036 - point_e_optimized.core - INFO - Loading optimized models...
+2026-03-26 17:39:00,235 - point_e_optimized.utils - ERROR - System execution failed: 
