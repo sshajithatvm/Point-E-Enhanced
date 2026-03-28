@@ -11,11 +11,12 @@ scikit-image>=0.18.0
 scipy>=1.5.0
 numpy>=1.19.0
 
+# Point cloud processing and optimization
+open3d>=0.13.0
+psutil>=5.8.0
+
 # CLIP from GitHub
 clip @ git+https://github.com/openai/CLIP.git
-
-# Additional dependencies detected from code
-open3d>=0.13.0
 
 # Jupyter and notebook support
 jupyter>=1.0.0

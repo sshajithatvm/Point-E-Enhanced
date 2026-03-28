@@ -1,6 +1,6 @@
 import random
 from dataclasses import dataclass
-from typing import BinaryIO, Dict, List, Optional, Union
+from typing import Any, BinaryIO, Dict, List, Optional, Union
 
 import numpy as np
 
@@ -64,6 +64,77 @@ class PointCloud:
                 else None
             ),
         )
+
+    def validate(
+        self,
+        min_points: int = 1024,
+        min_axis_range: float = 1e-3,
+        min_diagonal: float = 1e-2,
+    ) -> Dict[str, Any]:
+        """Validate point cloud quality and return diagnostic stats."""
+        metrics = {
+            "point_count": len(self.coords),
+            "valid": False,
+            "errors": [],
+            "bbox": None,
+            "axis_ranges": None,
+            "diagonal_length": None,
+        }
+
+        if self.coords is None:
+            metrics["errors"].append("coords is None")
+            return metrics
+
+        if not isinstance(self.coords, np.ndarray):
+            metrics["errors"].append("coords is not numpy array")
+            return metrics
+
+        if self.coords.ndim != 2 or self.coords.shape[1] != 3:
+            metrics["errors"].append(
+                f"coords must be Nx3 array, got shape {self.coords.shape}"
+            )
+            return metrics
+
+        n_points = self.coords.shape[0]
+        metrics["point_count"] = n_points
+
+        if n_points < min_points:
+            metrics["errors"].append(
+                f"point count too low ({n_points} < {min_points})"
+            )
+
+        if not np.isfinite(self.coords).all():
+            num_invalid = np.sum(~np.isfinite(self.coords))
+            metrics["errors"].append(f"coords contain non-finite values ({num_invalid})")
+
+        bbox_min = np.min(self.coords, axis=0)
+        bbox_max = np.max(self.coords, axis=0)
+        axis_ranges = bbox_max - bbox_min
+
+        metrics["bbox"] = {
+            "min": bbox_min.tolist(),
+            "max": bbox_max.tolist(),
+        }
+        metrics["axis_ranges"] = axis_ranges.tolist()
+
+        for axis, rng in zip(["x", "y", "z"], axis_ranges):
+            if rng < min_axis_range:
+                metrics["errors"].append(
+                    f"axis {axis} range too small ({rng:.6f} < {min_axis_range})"
+                )
+
+        diagonal_length = float(np.linalg.norm(axis_ranges))
+        metrics["diagonal_length"] = diagonal_length
+
+        if diagonal_length < min_diagonal:
+            metrics["errors"].append(
+                f"bounding box diagonal too small ({diagonal_length:.6f} < {min_diagonal})"
+            )
+
+        if len(metrics["errors"]) == 0:
+            metrics["valid"] = True
+
+        return metrics
 
     def random_sample(self, num_points: int, **subsample_kwargs) -> "PointCloud":
         """

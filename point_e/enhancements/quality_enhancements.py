@@ -1,0 +1,252 @@
+"""
+Advanced point cloud quality enhancements using local neighborhood methods.
+Focuses on structure refinement, noise reduction, and point distribution optimization
+without altering original geometry or increasing point count.
+"""
+
+import numpy as np
+import logging
+from typing import Tuple, Optional
+
+try:
+    import open3d as o3d
+    OPEN3D_AVAILABLE = True
+except ImportError:
+    o3d = None
+    OPEN3D_AVAILABLE = False
+
+from point_e.util.point_cloud import PointCloud
+
+logger = logging.getLogger(__name__)
+
+
+def compute_local_statistics(points: np.ndarray, k: int = 20) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Compute local neighborhood statistics for each point.
+
+    Args:
+        points: Point cloud coordinates [N, 3]
+        k: Number of nearest neighbors to consider
+
+    Returns:
+        Tuple of (local_density, local_variance, neighbor_distances)
+    """
+    if not OPEN3D_AVAILABLE:
+        logger.warning("Open3D not available, returning default statistics")
+        N = len(points)
+        return np.ones(N), np.zeros(N), np.full(N, 0.1)
+
+    pcd = o3d.geometry.PointCloud()
+    pcd.points = o3d.utility.Vector3dVector(points)
+    kdtree = o3d.geometry.KDTreeFlann(pcd)
+
+    local_density = np.zeros(len(points))
+    local_variance = np.zeros(len(points))
+    neighbor_distances = np.zeros(len(points))
+
+    for i in range(len(points)):
+        # Find k nearest neighbors
+        _, indices, distances = kdtree.search_knn_vector_3d(points[i], k + 1)  # +1 because includes self
+
+        if len(indices) > 1:
+            neighbors = points[indices[1:]]  # Exclude self
+            neighbor_dists = distances[1:]
+
+            # Local density: inverse of average distance to neighbors
+            avg_distance = np.mean(neighbor_dists)
+            local_density[i] = 1.0 / (avg_distance + 1e-6)
+
+            # Local variance: variance of distances in neighborhood
+            local_variance[i] = np.var(neighbor_dists)
+
+            # Store average neighbor distance
+            neighbor_distances[i] = avg_distance
+        else:
+            local_density[i] = 0.1
+            local_variance[i] = 0.0
+            neighbor_distances[i] = 0.1
+
+    return local_density, local_variance, neighbor_distances
+
+
+def adaptive_noise_reduction(points: np.ndarray, local_variance: np.ndarray,
+                           variance_threshold: float = 0.01) -> np.ndarray:
+    """
+    Reduce noise in high-variance regions while preserving structure in low-variance areas.
+
+    Args:
+        points: Point cloud coordinates [N, 3]
+        local_variance: Local variance for each point
+        variance_threshold: Threshold above which to apply stronger smoothing
+
+    Returns:
+        Noise-reduced point cloud [N, 3]
+    """
+    if not OPEN3D_AVAILABLE:
+        return points
+
+    pcd = o3d.geometry.PointCloud()
+    pcd.points = o3d.utility.Vector3dVector(points)
+    kdtree = o3d.geometry.KDTreeFlann(pcd)
+
+    smoothed = points.copy()
+
+    for i in range(len(points)):
+        if local_variance[i] > variance_threshold:
+            # High variance region - apply stronger smoothing
+            _, indices, _ = kdtree.search_knn_vector_3d(points[i], 11)  # 10 neighbors + self
+
+            if len(indices) > 1:
+                neighbors = points[indices[1:]]
+                # Weighted average with inverse variance weighting
+                weights = 1.0 / (local_variance[indices[1:]] + 1e-6)
+                weights = weights / np.sum(weights)
+
+                smoothed[i] = np.sum(neighbors * weights[:, np.newaxis], axis=0)
+        # Low variance regions are left unchanged to preserve structure
+
+    return smoothed
+
+
+def optimize_point_distribution(points: np.ndarray, local_density: np.ndarray,
+                              target_density: float = 1.0) -> np.ndarray:
+    """
+    Optimize point distribution using local density equalization.
+    Moves points from dense regions to sparse regions while preserving structure.
+
+    Args:
+        points: Point cloud coordinates [N, 3]
+        local_density: Local density for each point
+        target_density: Target density level
+
+    Returns:
+        Distribution-optimized point cloud [N, 3]
+    """
+    if not OPEN3D_AVAILABLE:
+        return points
+
+    # Identify over-dense and under-dense regions
+    mean_density = np.mean(local_density)
+    density_ratio = local_density / (mean_density + 1e-6)
+
+    # Points in dense regions (density_ratio > 1.5) get slight repulsion
+    # Points in sparse regions (density_ratio < 0.7) get slight attraction
+    adjustment_factor = np.clip((1.0 - density_ratio) * 0.02, -0.01, 0.01)
+
+    pcd = o3d.geometry.PointCloud()
+    pcd.points = o3d.utility.Vector3dVector(points)
+    kdtree = o3d.geometry.KDTreeFlann(pcd)
+
+    optimized = points.copy()
+
+    for i in range(len(points)):
+        if abs(adjustment_factor[i]) > 1e-6:
+            # Find nearest neighbors to determine movement direction
+            _, indices, _ = kdtree.search_knn_vector_3d(points[i], 6)
+
+            if len(indices) > 1:
+                neighbors = points[indices[1:]]
+                neighbor_vector = np.mean(neighbors - points[i], axis=0)
+                neighbor_vector = neighbor_vector / (np.linalg.norm(neighbor_vector) + 1e-6)
+
+                # Apply small adjustment in direction away from dense neighbors
+                if density_ratio[i] > 1.2:  # Dense region
+                    optimized[i] += adjustment_factor[i] * neighbor_vector
+                elif density_ratio[i] < 0.8:  # Sparse region
+                    optimized[i] -= adjustment_factor[i] * neighbor_vector
+
+    return optimized
+
+
+def refine_structural_accuracy(points: np.ndarray, local_variance: np.ndarray,
+                             neighbor_distances: np.ndarray) -> np.ndarray:
+    """
+    Refine structural accuracy by correcting points that deviate significantly
+    from their local neighborhood surface.
+
+    Args:
+        points: Point cloud coordinates [N, 3]
+        local_variance: Local variance for each point
+        neighbor_distances: Average neighbor distances
+
+    Returns:
+        Structurally refined point cloud [N, 3]
+    """
+    if not OPEN3D_AVAILABLE:
+        return points
+
+    pcd = o3d.geometry.PointCloud()
+    pcd.points = o3d.utility.Vector3dVector(points)
+    kdtree = o3d.geometry.KDTreeFlann(pcd)
+
+    refined = points.copy()
+
+    for i in range(len(points)):
+        # Find local neighborhood
+        _, indices, distances = kdtree.search_knn_vector_3d(points[i], 11)
+
+        if len(indices) > 3:
+            neighbors = points[indices[1:]]
+            neighbor_dists = distances[1:]
+
+            # Compute local surface normal approximation
+            # Use PCA on neighborhood to find primary direction
+            centered_neighbors = neighbors - np.mean(neighbors, axis=0)
+            cov_matrix = np.cov(centered_neighbors.T)
+            eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
+
+            # Smallest eigenvalue direction is normal to surface
+            normal = eigenvectors[:, 0]
+
+            # Project point onto local surface approximation
+            # This is a simplified approach - fit plane to neighbors
+            neighbor_center = np.mean(neighbors, axis=0)
+            point_to_center = points[i] - neighbor_center
+
+            # Distance along normal
+            dist_along_normal = np.dot(point_to_center, normal)
+
+            # If point deviates too far from surface, pull it back slightly
+            max_reasonable_dist = np.mean(neighbor_dists) * 0.5
+            if abs(dist_along_normal) > max_reasonable_dist:
+                correction = np.clip(dist_along_normal, -max_reasonable_dist, max_reasonable_dist)
+                refined[i] = points[i] - correction * normal * 0.3  # Partial correction
+
+    return refined
+
+
+def enhance_point_cloud_quality(pc: PointCloud, num_iterations: int = 2) -> PointCloud:
+    """
+    Apply comprehensive quality enhancement using local neighborhood methods.
+    Preserves original geometry while improving structure, reducing noise, and optimizing distribution.
+
+    Args:
+        pc: Input PointCloud object
+        num_iterations: Number of enhancement iterations
+
+    Returns:
+        Quality-enhanced PointCloud object
+    """
+    points = np.array(pc.coords)
+    logger.info(f"Starting quality enhancement on {len(points)} points")
+
+    for iteration in range(num_iterations):
+        logger.debug(f"Quality enhancement iteration {iteration + 1}/{num_iterations}")
+
+        # Step 1: Compute local neighborhood statistics
+        local_density, local_variance, neighbor_distances = compute_local_statistics(points)
+
+        # Step 2: Adaptive noise reduction
+        points = adaptive_noise_reduction(points, local_variance)
+
+        # Step 3: Optimize point distribution
+        points = optimize_point_distribution(points, local_density)
+
+        # Step 4: Refine structural accuracy
+        points = refine_structural_accuracy(points, local_variance, neighbor_distances)
+
+    # Rebuild PointCloud object with preserved channels
+    enhanced_pc = PointCloud(coords=points, channels=pc.channels)
+
+    logger.info(f"Quality enhancement complete: {len(points)} points processed")
+    return enhanced_pc
