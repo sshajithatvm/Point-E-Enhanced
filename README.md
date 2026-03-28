@@ -46,9 +46,27 @@ The focus is on **real quality improvement**, not just increasing point count or
   - No empty point clouds  
   - No NaN or infinite values  
   - Proper spatial distribution (bounding box validation)  
-- Ensures outputs are usable and consistent  
+- Ensures outputs are usable and consistent
 
-<<<<<<< HEAD
+---
+
+- ### 6. Output Generation
+- Produces enhanced point cloud outputs
+- Saves results for verification and comparison
+- Supports before-and-after evaluation of improvements
+
+---
+
+## Summary
+
+This project focuses on making Point-E outputs:
+- **Sharper**
+- **Cleaner**
+- **More detailed**
+- **Structurally accurate**
+
+while ensuring performance, reliability, and correctness are not compromised.
+
 # Project Structure
 
 This project has been organized into a clean, production-ready structure:
@@ -75,38 +93,3 @@ This project has been organized into a clean, production-ready structure:
 - **scripts/**: Production scripts and optimized pipelines
 - **tests/**: Unit tests, integration tests, and validation scripts
 
----
-
-### 6. Output Generation
-- Produces enhanced point cloud outputs
-- Saves results for verification and comparison
-- Supports before-and-after evaluation of improvements
-
----
-
-## Summary
-
-This project focuses on making Point-E outputs:
-- **Sharper**
-- **Cleaner**
-- **More detailed**
-- **Structurally accurate**
-
-while ensuring performance, reliability, and correctness are not compromised.
-
-### 6. Output Generation
-- Produces enhanced point cloud outputs  
-- Saves results for verification and comparison  
-- Supports before-and-after evaluation of improvements  
-
----
-
-## Summary
-
-This project focuses on making Point-E outputs:
-- **Sharper**
-- **Cleaner**
-- **More detailed**
-- **Structurally accurate**
-
-while ensuring performance, reliability, and correctness are not compromised.
