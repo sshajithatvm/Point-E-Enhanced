@@ -1,1 +1,12 @@
 point_e_optimized_env/ 
+point_e_clean_env/ 
+point_e_optimized_env/ 
+point_e_model_cache/ 
+*.pt 
+*.dll 
+*.pyd 
+point_e_optimized_env/ 
+point_e_model_cache/ 
+*.pt 
+*.dll 
+*.pyd 
